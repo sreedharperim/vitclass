@@ -1,4 +1,6 @@
 {
+  "homepage": "https://<yourusername>.github.io/gclassroom"
+
   "name": "gclass-frontend",
   "version": "1.0.0",
   "private": true,
