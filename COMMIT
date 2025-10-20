@@ -1,0 +1,59 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch main
+# Your branch is behind 'origin/main' by 2 commits, and can be fast-forwarded.
+#   (use "git pull" to update your local branch)
+#
+# Changes to be committed:
+#	modified:   .DS_Store
+#	modified:   backend/.DS_Store
+#	deleted:    backend/backend.zip
+#	deleted:    backend/routes/.assignments.js.swp
+#	modified:   backend/routes/assignments.js
+#	modified:   backend/routes/classes.js
+#	deleted:    db/mydatabase_backup-.sql
+#	deleted:    db/mydatabase_backup-1.sql
+#	deleted:    db/mydatabase_backup.sql
+#	deleted:    frontend/frontend.zip
+#	modified:   frontend/node_modules/.cache/.eslintcache
+#	modified:   frontend/node_modules/.cache/default-development/0.pack
+#	modified:   frontend/node_modules/.cache/default-development/1.pack
+#	modified:   frontend/node_modules/.cache/default-development/10.pack
+#	modified:   frontend/node_modules/.cache/default-development/11.pack
+#	modified:   frontend/node_modules/.cache/default-development/12.pack
+#	modified:   frontend/node_modules/.cache/default-development/2.pack
+#	modified:   frontend/node_modules/.cache/default-development/3.pack
+#	modified:   frontend/node_modules/.cache/default-development/4.pack
+#	modified:   frontend/node_modules/.cache/default-development/5.pack
+#	modified:   frontend/node_modules/.cache/default-development/6.pack
+#	modified:   frontend/node_modules/.cache/default-development/7.pack
+#	modified:   frontend/node_modules/.cache/default-development/8.pack
+#	modified:   frontend/node_modules/.cache/default-development/9.pack
+#	modified:   frontend/node_modules/.cache/default-development/index.pack
+#	modified:   frontend/node_modules/.cache/default-development/index.pack.old
+#	modified:   frontend/src/App.js
+#	modified:   frontend/src/index.css
+#	modified:   frontend/src/pages/ClassPage.js
+#	modified:   frontend/src/pages/Dashboard.js
+#
+# Untracked files:
+#	.gitignore
+#	OLD/
+#	backend.zip
+#	backend/.gitignore
+#	backend/env
+#	db/vitclass_backup-1.sql
+#	frontend.zip
+#	frontend/.DS_Store
+#	frontend/.gitignore
+#	frontend/src/.DS_Store
+#	frontend/src/components/AssignStudentsModal.js
+#	frontend/src/pages/AssignmentEdit.js
+#	frontend/src/pages/AssignmentSubmissions.js
+#	frontend/src/pages/ClassPage.js-nostudentassign
+#	frontend/src/pages/Dashboard.js.class
+#	frontend/src/pages/Dashboard.js.noclass
+#	frontend/src/pages/TeacherDashboard.js
+#
