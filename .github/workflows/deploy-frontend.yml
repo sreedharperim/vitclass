@@ -1,4 +1,4 @@
-name: Build & Deploy Frontend to GitHub Pages
+name: Build & Deploy Frontend (peaceiris)
 
 on:
   push:
@@ -7,60 +7,30 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
 
-      - name: Install frontend dependencies
+      - name: Install
         working-directory: ./frontend
-        run: |
-          echo "Working directory: $(pwd)"
-          npm ci --legacy-peer-deps
+        run: npm ci --legacy-peer-deps
 
-      - name: Build frontend
+      - name: Build
         working-directory: ./frontend
         env:
           REACT_APP_API: ${{ secrets.REACT_APP_API }}
-        run: |
-          echo "Running build in $(pwd)"
-          npm run build
-          echo "Build exit code: $?"
-          echo "List frontend directory:"
-          ls -la $(pwd)
-          echo "List build directory after build:"
-          ls -la $(pwd)/build || true
+        run: npm run build
 
-      - name: Show build contents (for debugging)
-        run: |
-          echo "Root listing:"
-          ls -la
-          echo "frontend listing:"
-          ls -la frontend || true
-          echo "frontend/build listing (if present):"
-          ls -la frontend/build || true
-
-      - name: Upload artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v1
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: ./frontend/build
-
-  deploy:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: pages
-        uses: actions/deploy-pages@v1
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./frontend/build
