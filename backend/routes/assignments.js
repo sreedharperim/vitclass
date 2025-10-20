@@ -20,6 +20,38 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
+// PUT /api/assignments/:id  (teacher only)
+router.put('/:id', auth, async (req, res) => {
+  try {
+    const assignmentId = req.params.id;
+    const { title, description, due_date, total_points } = req.body;
+    // verify assignment exists and teacher owns class
+    const [[assignment]] = await pool.query(
+      `SELECT a.*, c.teacher_id FROM assignments a JOIN classes c ON a.class_id = c.id WHERE a.id = ? LIMIT 1`,
+      [assignmentId]
+    );
+    if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
+    if (req.user.role !== 'teacher' || req.user.id !== assignment.teacher_id) {
+      return res.status(403).json({ error: 'Only the owning teacher can edit this assignment' });
+    }
+
+    const updates = [];
+    const params = [];
+    if (title !== undefined) { updates.push('title = ?'); params.push(title); }
+    if (description !== undefined) { updates.push('description = ?'); params.push(description); }
+    if (due_date !== undefined) { updates.push('due_date = ?'); params.push(due_date); }
+    if (total_points !== undefined) { updates.push('total_points = ?'); params.push(total_points); }
+    if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
+
+    params.push(assignmentId);
+    const sql = `UPDATE assignments SET ${updates.join(', ')} WHERE id = ?`;
+    await pool.query(sql, params);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Failed to update assignment', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 router.get('/class/:classId', auth, async (req, res) => {
   try {

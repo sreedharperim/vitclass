@@ -1,47 +1,105 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import API from '../api';
 import { AuthContext } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
   const [classes, setClasses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ title: '', code: '', description: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (user?.role === 'teacher') loadClasses();
+    else load();
+  }, []);
 
   async function load() {
     setLoading(true);
     try { const r = await API.get('/classes'); setClasses(r.data); } catch (err) { setClasses([]); } finally { setLoading(false); }
   }
 
+
+  async function loadClasses() {
+    setLoading(true);
+    try {
+      const res = await API.get('/classes/my');
+      setClasses(res.data || []);
+    } catch (err) {
+      setError(err.response?.data?.error || err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleCreate(e) {
+    e.preventDefault();
+    try {
+      await API.post('/classes', form);
+      setShowForm(false);
+      setForm({ title: '', code: '', description: '' });
+      loadClasses();
+    } catch (err) {
+      alert(err.response?.data?.error || err.message);
+    }
+  }
+
   return (
-    <div className="center-container">
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:18}}>
-        <div>
-          <h1 className="text-3xl" style={{margin:0}}>Welcome{user?`, ${user.name}`:''}</h1>
-          <div className="small-muted">Your classes</div>
-        </div>
+    <div className="center-container" style={{ paddingBottom: 40 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
+        <h1 style={{ margin:0 }}>Dashboard</h1>
+        {user?.role === 'teacher' && (
+          <button onClick={() => setShowForm(!showForm)} className="btn btn-primary">
+            {showForm ? 'Cancel' : '+ Create Class'}
+          </button>
+        )}
       </div>
 
-      {loading ? <div className="card">Loading...</div> : classes.length===0 ? <div className="card small-muted">No classes</div> : (
-        <div className="course-grid">
-          {classes.map(c => (
-            <div key={c.id} className="card" role="button" tabIndex={0} onClick={() => window.location.href=`/class/${c.id}`} style={{cursor:'pointer'}}>
-              <div style={{display:'flex',justifyContent:'space-between'}}>
-                <div>
-                  <h3 style={{margin:'0 0 6px 0'}}>{c.title}</h3>
-                  <div className="small-muted">{c.description}</div>
-                </div>
-                <div style={{minWidth:120,textAlign:'right'}}>
-                  <div className="small-muted">Code</div>
-                  <div style={{fontWeight:700,marginTop:6}}>{c.code}</div>
-                  <div style={{marginTop:6}}><button onClick={(e)=>{ e.stopPropagation(); navigator.clipboard && navigator.clipboard.writeText(c.code); }} className="btn btn-ghost">Copy</button></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      {showForm && (
+        <form onSubmit={handleCreate} className="card" style={{ marginBottom: 16 }}>
+          <h3 style={{ marginTop: 0 }}>Create a New Class</h3>
+          <label>Title</label>
+          <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
+          <label>Code</label>
+          <input value={form.code} onChange={e => setForm({ ...form, code: e.target.value })} required />
+          <label>Description</label>
+          <textarea
+            rows="3"
+            value={form.description}
+            onChange={e => setForm({ ...form, description: e.target.value })}
+          />
+          <button type="submit" className="btn btn-primary" style={{ marginTop: 8 }}>
+            Create
+          </button>
+        </form>
       )}
+
+      {loading && <div className="card">Loading classes...</div>}
+      {error && <div className="card" style={{ color:'#DC2626' }}>{error}</div>}
+
+      <div style={{
+        display:'grid',
+        gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))',
+        gap:16
+      }}>
+        {classes.length === 0 && !loading ? (
+          <div className="card small-muted">No classes yet. Create one to get started!</div>
+        ) : (
+          classes.map(c => (
+            <div key={c.id} className="card">
+              <h3 style={{ marginTop:0 }}>{c.title}</h3>
+              <div className="small-muted">Code: {c.code}</div>
+              {c.description && <p style={{ marginTop:8 }}>{c.description}</p>}
+              <Link to={`/class/${c.id}`} className="btn btn-ghost" style={{ marginTop:12 }}>
+                View Class →
+              </Link>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
+
