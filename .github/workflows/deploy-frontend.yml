@@ -3,17 +3,10 @@ name: Deploy Frontend to GitHub Pages
 on:
   push:
     branches: [ main ]
-<<<<<<< HEAD
 
 permissions:
   contents: write  # ✅ gives GITHUB_TOKEN permission to push
 
-=======
-    
-permissions:
-  contents: write  # ✅  gives GITHUB_TOKEN permission to push
-  
->>>>>>> 5a15323cfdd8a8c6ac7e6a57c6351db1203eb4ac
 jobs:
   deploy:
     runs-on: ubuntu-latest
