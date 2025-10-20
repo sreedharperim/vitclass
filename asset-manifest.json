@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/vitclass/static/css/main.c0cc3070.css",
+    "main.js": "/vitclass/static/js/main.0b817c42.js",
+    "index.html": "/vitclass/index.html",
+    "main.c0cc3070.css.map": "/vitclass/static/css/main.c0cc3070.css.map",
+    "main.0b817c42.js.map": "/vitclass/static/js/main.0b817c42.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c0cc3070.css",
+    "static/js/main.0b817c42.js"
+  ]
+}
