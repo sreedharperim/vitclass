@@ -1,27 +1,66 @@
-name: Deploy Frontend to GitHub Pages
+name: Build & Deploy Frontend to GitHub Pages
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 permissions:
-  contents: write  # ✅  gives GITHUB_TOKEN permission to push
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: Install and build
+          cache: 'npm'
+
+      - name: Install frontend dependencies
         working-directory: ./frontend
         run: |
+          echo "Working directory: $(pwd)"
           npm ci --legacy-peer-deps
-          REACT_APP_API=${{ secrets.REACT_APP_API }} npm run build
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+
+      - name: Build frontend
+        working-directory: ./frontend
+        env:
+          REACT_APP_API: ${{ secrets.REACT_APP_API }}
+        run: |
+          echo "Running build in $(pwd)"
+          npm run build
+          echo "Build exit code: $?"
+          echo "List frontend directory:"
+          ls -la $(pwd)
+          echo "List build directory after build:"
+          ls -la $(pwd)/build || true
+
+      - name: Show build contents (for debugging)
+        run: |
+          echo "Root listing:"
+          ls -la
+          echo "frontend listing:"
+          ls -la frontend || true
+          echo "frontend/build listing (if present):"
+          ls -la frontend/build || true
+
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/build
+          path: ./frontend/build
+
+  deploy:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: pages
+        uses: actions/deploy-pages@v1
