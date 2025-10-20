@@ -1,5 +1,5 @@
 // frontend/src/components/AssignStudentsModal.js
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import API from '../api';
 
 export default function AssignStudentsModal({ classId, open, onClose, onAssigned }) {
@@ -10,13 +10,7 @@ export default function AssignStudentsModal({ classId, open, onClose, onAssigned
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    if (!open) return;
-    loadAvailable();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, classId]);
-
-  async function loadAvailable() {
+  const loadAvailable = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -27,7 +21,13 @@ export default function AssignStudentsModal({ classId, open, onClose, onAssigned
     } finally {
       setLoading(false);
     }
-  }
+  }, [classId]);
+
+  useEffect(() => {
+    if (!open) return;
+    loadAvailable();
+  }, [open, loadAvailable]);
+
 
   function toggle(id) {
     const s = new Set(selected);

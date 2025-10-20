@@ -1,5 +1,5 @@
 // frontend/src/pages/ClassPage.js
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import API from '../api';
 import { AuthContext } from '../contexts/AuthContext';
@@ -32,12 +32,8 @@ export default function ClassPage() {
 
   const [assignModalOpen, setAssignModalOpen] = useState(false);
 
-  useEffect(() => {
-    loadAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, refreshKey]);
 
-  async function loadAll() {
+  const loadAll = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -55,7 +51,12 @@ export default function ClassPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [refreshKey]);
+
+  useEffect(() => {
+    loadAll();
+  }, [id, loadAll]);
+
 
   function refresh() {
     setRefreshKey(k => k + 1);

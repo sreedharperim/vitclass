@@ -1,5 +1,5 @@
 // frontend/src/pages/AssignmentSubmissions.js
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import API from '../api';
 import { AuthContext } from '../contexts/AuthContext';
@@ -13,12 +13,8 @@ export default function AssignmentSubmissions() {
   const [grading, setGrading] = useState({});
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -39,7 +35,11 @@ export default function AssignmentSubmissions() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [id]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function handleGrade(submissionId) {
     const value = prompt('Enter numeric grade (e.g. 85) — leave blank to cancel');

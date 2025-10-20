@@ -1,6 +1,6 @@
 // frontend/src/pages/MessagesPage.js
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useCallback, useNavigate, useParams, useLocation } from 'react-router-dom';
 import API from '../api';
 
 export default function MessagesPage() {
@@ -14,32 +14,32 @@ export default function MessagesPage() {
   const location = useLocation();
 
   useEffect(() => {
-    load();
-    // try to open detail if route contains id (deep link)
-    // note: if App uses separate route /messages/:id it will mount MessageDetail; this is a safe fallback
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     if (routeMessageId && messages.length) {
       const m = messages.find(x => String(x.id) === String(routeMessageId));
       if (m) setSelected(m);
     }
   }, [routeMessageId, messages]);
 
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await API.get('/messages/my');
-      setMessages(res.data || []);
-    } catch (err) {
-      console.error('Failed to load messages', err);
-      setError(err.response?.data?.error || err.message);
-    } finally {
-      setLoading(false);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await API.get('/messages/my');
+        setMessages(res.data || []);
+      } catch (err) {
+        console.error('Failed to load messages', err);
+        setError(err.response?.data?.error || err.message);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
+
+    load();
+    // try to open detail if route contains id (deep link)
+    // note: if App uses separate route /messages/:id it will mount MessageDetail; this is a safe fallback
+  }, []);
 
   async function markRead(msgId) {
     try {
