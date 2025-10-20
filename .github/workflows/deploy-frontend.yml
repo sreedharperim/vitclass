@@ -1,9 +1,8 @@
-name: Build & Deploy Frontend to GitHub Pages
+name: Build & Deploy Frontend (peaceiris)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -14,37 +13,23 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
 
-      - name: Install frontend dependencies
+      - name: Install
         working-directory: ./frontend
-        run: |
-          echo "PWD: $(pwd)"
-          echo "Listing frontend dir:"
-          ls -la ./frontend || true
-          npm ci --legacy-peer-deps
+        run: npm ci --legacy-peer-deps
 
       - name: Build frontend
         working-directory: ./frontend
         env:
           REACT_APP_API: ${{ secrets.REACT_APP_API }}
-        run: |
-          echo "Building frontend in $(pwd)"
-          npm run build
-          echo "Build exit code: $?"
-          echo "Listing frontend/build:"
-          ls -la ./build || true
-          echo "Show build/index.html (if present):"
-          [ -f ./build/index.html ] && echo "index.html found" || echo "index.html MISSING"
+        run: npm run build
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v4
