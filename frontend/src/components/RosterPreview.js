@@ -1,0 +1,2 @@
+import React, {useEffect,useState} from 'react';
+import API from '../api'; export default function RosterPreview({classId}){ const [members,setMembers]=useState([]); useEffect(()=>{ if(!classId) return; API.get(`/classes/${classId}/roster`).then(r=>setMembers(r.data.slice(0,5))).catch(()=>setMembers([])); },[classId]); if(!members.length) return <div className='small-muted'>No members</div>; return (<div>{members.map(m=> (<div key={m.id} style={{display:'flex',justifyContent:'space-between'}}><div>{m.name}</div><div className='small-muted'>{m.role}</div></div>))}</div>); }

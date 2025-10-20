@@ -1,0 +1,15 @@
+const express = require('express');
+const pool = require('./db');
+const auth = require('./middleware_auth');
+const multer = require('multer');
+const fs = require('fs');
+require('dotenv').config();
+const uploadDir = process.env.UPLOAD_DIR || 'uploads';
+if(!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+const storage = multer.diskStorage({ destination: function (req, file, cb) { cb(null, uploadDir) }, filename: function (req, file, cb) { cb(null, Date.now() + '-' + file.originalname) } });
+const upload = multer({ storage });
+const router = express.Router();
+router.post('/:assignmentId/submit', auth, upload.single('file'), async (req,res)=>{ const {assignmentId} = req.params; const content = req.body.content || null; const filePath = req.file ? (process.env.UPLOAD_DIR || 'uploads') + '/' + req.file.filename : null; try{ const [r] = await pool.query('INSERT INTO submissions (assignment_id, student_id, content, file_path) VALUES (?,?,?,?)',[assignmentId, req.user.id, content, filePath]); res.json({id:r.insertId}); } catch(err){ console.error(err); res.status(500).json({error:err.message}); } });
+router.get('/:assignmentId', auth, async (req,res)=>{ try{ const [rows] = await pool.query('SELECT s.*, u.name, u.email FROM submissions s JOIN users u ON u.id = s.student_id WHERE assignment_id = ?',[req.params.assignmentId]); res.json(rows); }catch(err){ console.error(err); res.status(500).json({error:err.message}); } });
+router.post('/:submissionId/grade', auth, async (req,res)=>{ if(req.user.role!=='teacher') return res.status(403).json({error:'only teachers can grade'}); const {grade,feedback} = req.body; try{ await pool.query('UPDATE submissions SET grade = ?, feedback = ? WHERE id = ?',[grade,feedback, req.params.submissionId]); res.json({ok:true}); }catch(err){ console.error(err); res.status(500).json({error:err.message}); } });
+module.exports = router;

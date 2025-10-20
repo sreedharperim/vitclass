@@ -1,0 +1,86 @@
+// frontend/src/components/CalendarView.js
+import React, { useEffect, useState } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import API from '../api';
+
+/**
+ * CalendarView
+ * Props:
+ *  - classId (required) : id of the class to show assignments for
+ *  - onEventClick (optional) : function(eventObj) when an event is clicked
+ *
+ * Renders a FullCalendar view populated with assignments from:
+ *   GET /api/assignments/class/:classId
+ *
+ * Each assignment becomes an event with:
+ *  - title: assignment title
+ *  - start: due_date (or created_at if missing)
+ *  - extendedProps: contains original assignment object
+ */
+export default function CalendarView({ classId, onEventClick }) {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!classId) return;
+    setLoading(true);
+
+    // Fetch assignments for class (backend filters what the current user can see)
+    API.get(`/assignments/class/${classId}`)
+      .then(res => {
+        const assignments = res.data || [];
+        const evts = assignments
+          // .filter(a => a.due_date) // only show those with due dates; comment out to include all
+          .map(a => ({
+            id: String(a.id),
+            title: a.title,
+            start: a.due_date,
+            allDay: false,
+            extendedProps: a,
+            backgroundColor: '#1A73E8',
+            borderColor: '#1558b0',
+            textColor: '#fff'
+          }));
+        setEvents(evts);
+      })
+      .catch(err => {
+        console.error('Calendar fetch failed', err);
+        setEvents([]);
+      })
+      .finally(() => setLoading(false));
+  }, [classId]);
+
+  function handleEventClick(clickInfo) {
+    const appt = clickInfo.event.extendedProps;
+    if (onEventClick) onEventClick(appt);
+    else {
+      // default: show a small native dialog (fallback)
+      alert(`${clickInfo.event.title}\nDue: ${clickInfo.event.start?.toLocaleString()}\n\n${appt.description || ''}`);
+    }
+  }
+
+  return (
+    <div style={{ minHeight: 360 }}>
+      {loading && <div className="card">Loading calendar…</div>}
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        }}
+        weekends={true}
+        events={events}
+        eventClick={handleEventClick}
+        height="auto"
+        dayMaxEvents={3}
+        themeSystem="standard"
+      />
+    </div>
+  );
+}
+
