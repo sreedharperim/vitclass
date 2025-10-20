@@ -35,11 +35,6 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./frontend/build
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Deploy to GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v1
