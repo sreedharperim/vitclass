@@ -1,8 +1,9 @@
-name: Build & Deploy Frontend (peaceiris)
+name: Build & Deploy Frontend to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -11,28 +12,49 @@ permissions:
   id-token: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Setup Node
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
 
-      - name: Install
+      - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm ci --legacy-peer-deps
+        run: |
+          echo "PWD: $(pwd)"
+          echo "Listing frontend dir:"
+          ls -la ./frontend || true
+          npm ci --legacy-peer-deps
 
-      - name: Build
+      - name: Build frontend
         working-directory: ./frontend
         env:
           REACT_APP_API: ${{ secrets.REACT_APP_API }}
-        run: npm run build
+        run: |
+          echo "Building frontend in $(pwd)"
+          npm run build
+          echo "Build exit code: $?"
+          echo "Listing frontend/build:"
+          ls -la ./build || true
+          echo "Show build/index.html (if present):"
+          [ -f ./build/index.html ] && echo "index.html found" || echo "index.html MISSING"
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/build
+          path: ./frontend/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v1
