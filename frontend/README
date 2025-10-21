@@ -1,0 +1,48 @@
+Part D — Configure Frontend to call the deployed backend
+
+Put the backend URL (with /api at the end) into the GitHub repo secret REACT_APP_API as noted in Part B.
+
+Example: https://gclass-backend.up.railway.app/api
+
+Quick local test: you can set frontend/.env for local dev:
+
+REACT_APP_API=https://gclass-backend.up.railway.app/api
+
+
+and re-run npm start.
+
+Push changes to main. The GitHub Action will build the frontend and deploy to GitHub Pages using that backend URL.
+
+Part E — Test everything after deploy
+
+Visit your frontend URL (GitHub Pages):
+https://<username>.github.io/<repo>/
+
+Login with seeded credentials — note: CORS and JWT must be correct.
+
+Visit Class page → View calendar → verify events.
+
+If you get API 404/401:
+
+Check backend logs on Railway.
+
+Ensure REACT_APP_API includes /api (or ensure frontend/src/api.js composes baseURL correctly).
+
+Ensure Authorization header is passed; check localStorage.token.A
+
+
+Alternative: Host backend on Render or Heroku
+
+If you prefer Render:
+
+Create a Web Service on Render and connect to your GitHub repo.
+
+Set Build Command: npm ci (or npm ci --legacy-peer-deps)
+
+Start Command: node server.js
+
+Add environment variables in Render UI.
+
+Create and attach a managed MySQL database (Render/External).
+
+The steps are similar to Railway.
