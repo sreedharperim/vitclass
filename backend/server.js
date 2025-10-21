@@ -10,6 +10,13 @@ const messagesRoutes = require('./routes/messages');
 const meRoutes = require('./routes/me');
 const path = require('path');
 const app = express();
+
+const cors = require('cors');
+app.use(cors({
+  origin: ['https://sreedharperim.github.io', 'http://localhost:3000'],
+  credentials: true
+}));
+
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, process.env.UPLOAD_DIR || 'uploads')));
