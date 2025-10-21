@@ -1,4 +1,5 @@
-const mysql = require('mysql2/promise');
+import mysql from "mysql2/promise";
+
 
 async function connectToDatabase() {
   try {
@@ -32,6 +33,7 @@ const pool = await connectToDatabase();
 
 
 /*
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
