@@ -1,0 +1,66 @@
+name: Build & Deploy Frontend (peaceiris)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Show repo layout (debug)
+        run: |
+          echo "Workspace: $(pwd)"
+          echo "Top-level files:"
+          ls -la
+
+      - name: Install dependencies (frontend)
+        working-directory: ./frontend
+        run: |
+          echo "Working dir: $(pwd)"
+          ls -la
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ] || [ -f yarn.lock ]; then
+            echo "Lockfile detected, using npm ci"
+            npm ci --legacy-peer-deps
+          else
+            echo "No lockfile, using npm install"
+            npm install --legacy-peer-deps
+          fi
+
+      - name: Build frontend
+        working-directory: ./frontend
+        env:
+          REACT_APP_API: ${{ secrets.REACT_APP_API }}
+        run: |
+          echo "React API : ${{ secrets.REACT_APP_API }}"
+          echo "Node: $(node -v) | Npm: $(npm -v)"
+          npm run build
+          echo "Build exit: $?"
+          echo "build folder listing:"
+          ls -la ./build || true
+          if [ ! -f ./build/index.html ]; then
+            echo "::error ::build output missing (build/index.html not found)"
+            exit 1
+          fi
+
+      - name: Deploy to gh-pages (peaceiris)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./frontend/build
+          # Optional: set user.name and user.email for the commit that peaceiris creates
+          # committer_name: "github-actions[bot]"
+          # committer_email: "41898282+github-actions[bot]@users.noreply.github.com"
