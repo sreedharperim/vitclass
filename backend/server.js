@@ -16,7 +16,7 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, process.env.UPLOAD_DIR || 'uploads')));
 app.use('/api/auth', authRoutes);
