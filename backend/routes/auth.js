@@ -19,7 +19,7 @@ router.post('/login', async (req,res)=>{
     try {
       await pool.query('SELECT 1'); // quick health check
       console.log('DB connected');
-      return pool;
+      //return pool;
     } catch (err) {
       console.error(`DB connect attempt ${i+1} failed:`, err.code || err.message);
       const backoff = 2000 * Math.pow(2, i);
