@@ -7,6 +7,9 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'gclass',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  ssl: {
+    rejectUnauthorized: false // accept self-signed or provider certs
+  },
 });
 module.exports = pool;
