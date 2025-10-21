@@ -9,7 +9,7 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
   ssl: {
-    rejectUnauthorized: false // accept self-signed or provider certs
+    rejectUnauthorized: true // accept self-signed or provider certs
   },
 });
 module.exports = pool;
