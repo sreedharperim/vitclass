@@ -1,40 +1,87 @@
-name: Build & Deploy Frontend (peaceiris)
+name: Build & Deploy Frontend to GitHub Pages
 
+# run on pushes to main and allow manual runs
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    outputs:
+      build-path: ./frontend/build
 
-      - name: Setup Node
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18 (with npm cache)
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
 
-      - name: Install
+      - name: Show repo layout (debug)
+        run: |
+          echo "Workspace root: $(pwd)"
+          echo "List repo root (first level):"
+          ls -la
+          echo "If your frontend is not in ./frontend, update workflow accordingly."
+
+      - name: Install frontend dependencies (use lockfile when present)
         working-directory: ./frontend
-        run: npm ci --legacy-peer-deps
+        run: |
+          echo "Working dir: $(pwd)"
+          echo "Listing frontend folder:"
+          ls -la || true
+
+          # Use npm ci when a lockfile exists; otherwise fall back to npm install
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ] || [ -f yarn.lock ]; then
+            echo "Lockfile found - using npm ci for reproducible installs"
+            npm ci --legacy-peer-deps
+          else
+            echo "No lockfile found - using npm install (consider committing package-lock.json for reproducible CI builds)"
+            npm install --legacy-peer-deps
+          fi
 
       - name: Build frontend
         working-directory: ./frontend
         env:
+          # This secret should contain the full backend base + '/api' (e.g. https://api.example.com/api)
           REACT_APP_API: ${{ secrets.REACT_APP_API }}
-        run: npm run build
+        run: |
+          echo "NODE: $(node -v) | NPM: $(npm -v)"
+          echo "Running build in $(pwd)"
+          npm run build
+          build_exit=$?
+          echo "build exit code: $build_exit"
+          echo "Listing frontend directory after build:"
+          ls -la .
+          echo "Listing frontend/build:"
+          ls -la ./build || true
+          if [ -f ./build/index.html ]; then
+            echo "✅ build/index.html found"
+          else
+            echo "❌ build/index.html NOT FOUND - build probably failed or output path is different"
+            exit 1
+          fi
 
       - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v2
         with:
           path: ./frontend/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v1
