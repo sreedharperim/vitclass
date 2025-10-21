@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 const pool = mysql.createPool({
-  uri: "mysql://root:kvydyRHKEvHbkoBbQJHdVXtFZwvKcdij@ballast.proxy.rlwy.net:47338/railway",   // e.g. mysql://user:pass@host:port/db
+  uri: "mysql://root:kvydyRHKEvHbkoBbQJHdVXtFZwvKcdij@ballast.proxy.rlwy.net:47338/gclass",   // e.g. mysql://user:pass@host:port/db
   /*
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
