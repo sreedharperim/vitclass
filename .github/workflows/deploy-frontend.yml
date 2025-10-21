@@ -45,6 +45,7 @@ jobs:
         env:
           REACT_APP_API: ${{ secrets.REACT_APP_API }}
         run: |
+          echo "React API : ${{ secrets.REACT_APP_API }}"
           echo "Node: $(node -v) | Npm: $(npm -v)"
           npm run build
           echo "Build exit: $?"
