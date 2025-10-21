@@ -13,3 +13,5 @@ Notes:
 - Update backend/.env if you want different DB credentials
 
  - ALTER TABLE class_members ADD UNIQUE KEY uniq_class_user (class_id, user_id); (For assigning students to class)
+
+https://vitclass.onrender.com/api/ - REACT_APP_API in secret
