@@ -14,7 +14,7 @@ router.post('/register', async (req,res)=>{
   catch(err){ console.error(err); return res.status(500).json({error:err.message}); }
 });
 router.post('/login', async (req,res)=>{
-  
+  /*
   for (let i = 0; i < 2; i++) {
     try {
       await pool.query('SELECT 1'); // quick health check
@@ -26,7 +26,7 @@ router.post('/login', async (req,res)=>{
       await new Promise(r => setTimeout(r, backoff));
     }
   }
-  
+  */
   const {email,password} = req.body;
   try{ const [rows] = await pool.query('SELECT * FROM users WHERE email = ?',[email]); const user = rows[0]; if(!user) return res.status(400).json({error:'no user'});
     const ok = await bcrypt.compare(password, user.password_hash); if(!ok) return res.status(400).json({error:'invalid creds'});
