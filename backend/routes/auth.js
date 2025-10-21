@@ -15,7 +15,7 @@ router.post('/register', async (req,res)=>{
 });
 router.post('/login', async (req,res)=>{
   
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 2; i++) {
     try {
       await pool.query('SELECT 1'); // quick health check
       console.log('DB connected');
