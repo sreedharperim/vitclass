@@ -1,13 +1,13 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 const pool = mysql.createPool({
-  uri: "mysql://root:kvydyRHKEvHbkoBbQJHdVXtFZwvKcdij@ballast.proxy.rlwy.net:47338/railway",   // e.g. mysql://user:pass@host:port/db
+  uri: "mysql://root:kvydyRHKEvHbkoBbQJHdVXtFZwvKcdij@ballast.proxy.rlwy.net:47338/class",   // e.g. mysql://user:pass@host:port/db
   /*
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASS || '',
-  */
   database: process.env.DB_NAME || 'gclass',
+  */
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
