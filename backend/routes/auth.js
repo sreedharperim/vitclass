@@ -32,6 +32,7 @@ router.post('/login', async (req,res)=>{
     const ok = await bcrypt.compare(password, user.password_hash); if(!ok) return res.status(400).json({error:'invalid creds'});
     const token = jwt.sign({id:user.id,role:user.role,name:user.name,email:user.email}, process.env.JWT_SECRET || 'supersecret', {expiresIn:'7d'});
     res.json({token});
+    console.log(`Login success ${email}, ${password}` );
   }catch(err){ console.error(err); res.status(500).json({error:err.message}); }
 });
 module.exports = router;
