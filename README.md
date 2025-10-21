@@ -15,3 +15,6 @@ Notes:
  - ALTER TABLE class_members ADD UNIQUE KEY uniq_class_user (class_id, user_id); (For assigning students to class)
 
 https://vitclass.onrender.com/api/ - REACT_APP_API in secret
+
+bash-3.2$ # mysql -h ballast.proxy.rlwy.net -u root -p  --port 47338 --protocol=TCP gclass
+bash-3.2$ # mysql -h ballast.proxy.rlwy.net -P 47338 -u root -p gclass
