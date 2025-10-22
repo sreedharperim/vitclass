@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/vitclass/static/css/main.c0cc3070.css",
-    "main.js": "/vitclass/static/js/main.1edb46d6.js",
+    "main.js": "/vitclass/static/js/main.a6f18424.js",
     "index.html": "/vitclass/index.html",
     "main.c0cc3070.css.map": "/vitclass/static/css/main.c0cc3070.css.map",
-    "main.1edb46d6.js.map": "/vitclass/static/js/main.1edb46d6.js.map"
+    "main.a6f18424.js.map": "/vitclass/static/js/main.a6f18424.js.map"
   },
   "entrypoints": [
     "static/css/main.c0cc3070.css",
-    "static/js/main.1edb46d6.js"
+    "static/js/main.a6f18424.js"
   ]
 }
