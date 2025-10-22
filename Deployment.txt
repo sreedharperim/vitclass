@@ -1,0 +1,18 @@
+In ChatGPT
+
+GitHub Repo Setup 
+
+# in project root
+git init
+git add .
+git commit -m "Initial commit - Google Classroom full project (Dockerized)"
+git branch -M main
+# create repo on GitHub (use gh CLI) or create via web UI
+# if you have GitHub CLI:
+gh repo create <your-username>/<repo> --public --source=. --push
+# OR add remote manually:
+git remote add origin https://github.com/<your-username>/<repo>.git
+git push -u origin main
+
+how to host it using free github
+
