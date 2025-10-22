@@ -12,7 +12,7 @@ const app = express();
 
 const cors = require('cors');
 app.use(cors({
-  origin: ['https://sreedharperim.github.io', 'http://localhost:3000'],
+  origin: ['https://sreedharperim.github.io', 'http://localhost:3000', 'https://aditi9597.github.io'],
   credentials: true
 }));
 
